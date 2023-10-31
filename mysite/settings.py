@@ -19,11 +19,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
+import environ
+# from dotenv import load_dotenv
+env = environ.Env()
+base = environ.Path(__file__) - 2 # two folders back (/a/b/ - 2 = /)
+environ.Env.read_env(env_file=base('.env')) # reading .env file
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7t4!s@v41zf)k+2u1oe1js8ibomz+%*cihe4sbjh9zm#=pqxi#'
+SECRET_KEY = env('SECRET_KEY')
+# Link = https://stackoverflow.com/questions/60222620/difference-between-django-environ-and-python-decouple
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", False)
 
 ALLOWED_HOSTS = []
 
