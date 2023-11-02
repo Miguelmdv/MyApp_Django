@@ -44,7 +44,7 @@ def create_project(request):
         Project.objects.create(
             name=request.POST["name"]
         )
-        return redirect("/projects/")
+        return redirect("projects")
 
 
 def create_task(request):
@@ -58,4 +58,11 @@ def create_task(request):
             description=request.POST["description"],
             project_id=1,
         )
-        return redirect("/tasks/")
+        return redirect("tasks")
+
+def project_detail(request, id):
+    project = get_object_or_404(Project, id=id)
+    tasks = Task.objects.filter(project=id)
+    return render(request, "projects/detail.html", {
+        "project": project, "tasks": tasks
+    })

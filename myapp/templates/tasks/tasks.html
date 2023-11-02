@@ -1,11 +1,10 @@
 {% extends "layout/base.html" %}
-
 {% block content %}
 
 <h1>Tasks</h1>
 
 {% for task in tasks %}
-<div>
+<div class="card">
     <h2> {% if task.done == False %}⏳ {% else %}✅ {% endif %}{{task.title}}</h2>
     <p>{{task.description}}</p>
     <p>Project: {{task.project.name}}</p>
@@ -16,6 +15,6 @@
         ✖ Delete
     </button>
 </div>
-{% endfor %} 
 
+{% endfor %} 
 {% endblock content %}
