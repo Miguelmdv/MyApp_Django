@@ -30,7 +30,7 @@ SECRET_KEY = env('SECRET_KEY')
 # Link = https://stackoverflow.com/questions/60222620/difference-between-django-environ-and-python-decouple
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", False)
+DEBUG = env.bool("DEBUG", False) # type: ignore
 
 ALLOWED_HOSTS = []
 
