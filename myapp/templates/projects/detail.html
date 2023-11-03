@@ -3,12 +3,31 @@
 
 <h1>{{project}}</h1>
 
-{% for task in tasks %}
+{% comment %} {% for task in tasks %}
 
 <div class="card">
-    <h3>{{task.title}}</h3>
+    <h3>{% if task.done == False %}⏳ {% else %}✅ {% endif %}{{ task.title }}</h3>
+    <p>{{ task.description }}</p>
 </div>
 
-{% endfor %}
+{% endfor %} {% endcomment %}
+<form method="POST" action="{% url "update_delete_task" %}">
+    {% csrf_token %}
+    {% for task in tasks %}
+        <div class="card" >
+            <h2> {% if task.done == False %}⏳ {% else %}✅ {% endif %}{{task.title}}</h2>
+            <p>{{task.description}}</p>
+            <button type="submit" name="check_task" value="{{ task.id }}">
+                ✔ Done
+            </button>
+            {% comment %} <button class ="delete_task" type="submit" name="task_id" value="{{ task.id }}"> {% endcomment %}
+                <button type="button" onclick="delete_verification({{ task.id }})"">
+                ✖ Delete
+            </button>
+        </div>
+    {% endfor %} 
+    <input type="hidden" id="task_id" name="task_id" value="">
+</form>
+
 {% endblock content %}
 

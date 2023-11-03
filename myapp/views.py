@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from .models import Project, Task
 from django.shortcuts import get_object_or_404
 from .forms import CreateNewTask, CreateNewProject
@@ -56,7 +56,7 @@ def create_task(request):
         Task.objects.create(
             title=request.POST["title"],
             description=request.POST["description"],
-            project_id=1,
+            project_id=request.POST["project"],
         )
         return redirect("tasks")
 
@@ -73,13 +73,15 @@ def update_delete_task(request):
             task_id = request.POST["check_task"]
             task = Task.objects.get(id=task_id)
             task.done = not task.done
-            task.save()
-            print(task, task_id, task.done)
-            
-            
+            task.save()       
         elif "task_id" in request.POST:
             task_id = request.POST["task_id"]
             if task_id:
                 task = Task.objects.get(id=task_id)
                 task.delete()
-    return redirect("tasks")
+
+    previous_url = request.META.get('HTTP_REFERER', 'tasks')
+    return redirect(previous_url)
+
+
+
