@@ -66,3 +66,20 @@ def project_detail(request, id):
     return render(request, "projects/detail.html", {
         "project": project, "tasks": tasks
     })
+    
+def update_delete_task(request):
+    if request.method == "POST":
+        if "check_task" in request.POST:
+            task_id = request.POST["check_task"]
+            task = Task.objects.get(id=task_id)
+            task.done = not task.done
+            task.save()
+            print(task, task_id, task.done)
+            
+            
+        elif "task_id" in request.POST:
+            task_id = request.POST["task_id"]
+            if task_id:
+                task = Task.objects.get(id=task_id)
+                task.delete()
+    return redirect("tasks")
