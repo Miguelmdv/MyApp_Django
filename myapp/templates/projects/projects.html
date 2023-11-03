@@ -1,16 +1,20 @@
 {% extends "layout/base.html" %}
 {% block content %}
 
-<h1>Projects</h1>
+<form method="POST" action="{% url "delete_project" %}">
 
-{% for project in projects %}
-
-<article class="card">
-    <a href="{% url "project_detail" project.id %}">
-        <h2>{{project.name}}</h2>
-    </a>
-   
-</article>
-
-{% endfor %}
+    {% csrf_token %}
+    {% for project in projects %}
+        <div class="card" >
+            <a href="{% url "project_detail" project.id %}">
+                <h2>{{project.name}}</h2>
+            </a>
+                <button type="button" onclick="delete_verification_project({{ project.id }})">
+                ✖ Delete
+            </button>
+        </div>
+    {% endfor %} 
+    <input type="hidden" id="project_id" name="project_id" value="">
+    
+</form>
 {% endblock content %}

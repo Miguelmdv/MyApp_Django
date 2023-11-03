@@ -67,6 +67,17 @@ def project_detail(request, id):
         "project": project, "tasks": tasks
     })
     
+def delete_project(request):
+    if request.method == "POST":
+        if "project_id" in request.POST:
+            project_id = request.POST["project_id"]
+            if project_id:
+                project = Project.objects.get(id=project_id)
+                project.delete()
+                
+    previous_url = request.META.get('HTTP_REFERER', 'projects')
+    return redirect(previous_url)
+    
 def update_delete_task(request):
     if request.method == "POST":
         if "check_task" in request.POST:
