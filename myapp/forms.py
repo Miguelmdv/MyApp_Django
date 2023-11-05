@@ -1,5 +1,6 @@
 from django import forms
-from .models import Project
+from django.forms import ModelForm 
+from .models import Project, Task
 from django.core.exceptions import ValidationError  
 from django.contrib.auth.forms import UserCreationForm  
 from django.contrib.auth.models import User  
@@ -8,10 +9,21 @@ class CreateNewTask(forms.Form):
     title = forms.CharField(label="Title", max_length=200, widget=forms.TextInput(attrs={"class": "input"}))
     description = forms.CharField(label="Description", required=False, widget=forms.Textarea(attrs={"class": "input"}))
     project = forms.ModelChoiceField(queryset=Project.objects.all(),label="Project", empty_label=None, widget=forms.Select(attrs={"class": "input"}))
+    important = forms.BooleanField(label="Important")
     
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ("title", "description", "project", "important")
+
+class ProjectForm(ModelForm):
+    class Meta:
+        model = Project
+        fields = ("name",)
+        
 class CreateNewProject(forms.Form):
     name = forms.CharField(label="Name", max_length=200, widget=forms.TextInput(attrs={"class": "input"}))
-    
+
 class CustomUserCreationForm(UserCreationForm):  
     username = forms.CharField(label='username', min_length=5, max_length=150)  
     email = forms.EmailField(label='email')  

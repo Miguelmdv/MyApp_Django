@@ -9,7 +9,7 @@
     {% for task in tasks %}
         <div class="card" >
             <div>
-                <h2> {% if task.done == False %}⏳ {% else %}✅ {% endif %}{{task.title}}</h2>
+                <h2> {% if task.done == False %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important == True %} ⭐{% endif %}</h2>
             </div>
             <div>
                 <p>{{task.description}}</p>

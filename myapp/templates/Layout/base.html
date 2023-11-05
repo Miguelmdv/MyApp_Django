@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Django App</title>
     <link rel="stylesheet" href="{% static "CSS/main.css" %}">
+    <link rel="icon"href="{% static 'Favicon/favicon.ico' %}">
     <script src="{% static 'js/script.js' %}"></script>
+
 </head>
 <body>
     <nav class="navbar container">
@@ -14,9 +16,6 @@
             <img src="{% static "IMG/logo2.png" %}" alt="Logo" width="100">
         </a>
         <ul class="menu">
-            <li>
-                <a href="{% url "index" %}">Home</a>
-            </li>
             {% if user.is_authenticated %}
             <li>
                 <a href="{% url "projects" %}">Projects</a>
@@ -30,15 +29,16 @@
             <li>
                 <a href="{% url "create_task" %}">Create task</a>
             </li>
-            {% endif %}
-            <li>
-                <a href="{% url "about" %}">About</a>
-            </li>
-            {% if user.is_authenticated %}
             <li>
                 <a href="{% url "log_out" %}">Log Out</a>
             </li>
             {% else %}
+            <li>
+                <a href="{% url "index" %}">Home</a>
+            </li>
+            <li>
+                <a href="{% url "about" %}">About</a>
+            </li>
             <li>
                 <a href="{% url "sign_up" %}">Sign Up</a>
             </li>

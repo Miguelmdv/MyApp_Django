@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Project, Task
 from django.shortcuts import get_object_or_404
-from .forms import CreateNewTask, CreateNewProject, CustomUserCreationForm
+from .forms import TaskForm, ProjectForm, CreateNewProject, CustomUserCreationForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
+from datetime import datetime
 
 
 # Create your views here.
@@ -36,28 +37,42 @@ def tasks(request):
 
 
 def create_project(request):
+    context = {"form": ProjectForm(), "error_message": ""}
     if request.method == "GET":
         # show interface
-        return render(
-            request, "projects/create_project.html", {"form": CreateNewProject()}
-        )
+        return render(request, "projects/create_project.html", context)
     else:
         # Save data
-        Project.objects.create(name=request.POST["name"])
+        # Project.objects.create(name=request.POST["name"])
+        try:
+            form = ProjectForm(request.POST)
+            new_project = form.save(commit=False)
+            new_project.user = request.user
+            new_project.save()
+        except ValueError:
+            context["error_message"] = "Data is not valid"
+            return render(request, "projects/create_project.html", context)
         return redirect("projects")
-
+    
 
 def create_task(request):
+    context = {"form": TaskForm(), "error_message": ""}
     if request.method == "GET":
         # show interface
-        return render(request, "tasks/create_task.html", {"form": CreateNewTask()})
+        return render(request, "tasks/create_task.html", context)
     else:
         # Save data
-        Task.objects.create(
-            title=request.POST["title"],
-            description=request.POST["description"],
-            project_id=request.POST["project"],
-        )
+        # Task.objects.create(
+        #     title=request.POST["title"],
+        #     description=request.POST["description"],
+        #     project_id=request.POST["project"],
+        # )
+        try:
+            form = TaskForm(request.POST)
+            form.save()
+        except ValueError:
+            context["error_message"] = "Data is not valid"
+            return render(request, "tasks/create_task.html", context)
         return redirect("tasks")
 
 
@@ -83,14 +98,23 @@ def update_delete_task(request):
     if request.method == "POST":
         if "check_task" in request.POST:
             task_id = request.POST["check_task"]
-            task = Task.objects.get(id=task_id)
-            task.done = not task.done
-            task.save()
+            if task_id:
+                task = Task.objects.get(id=task_id)
+                task.done = not task.done
+                if task.done:
+                    task.datecompleted = datetime.now()
+                task.save()
         elif "task_id" in request.POST:
             task_id = request.POST["task_id"]
             if task_id:
                 task = Task.objects.get(id=task_id)
                 task.delete()
+        elif "imp_task" in request.POST:
+            task_id = request.POST["imp_task"]
+            if task_id:
+                task = Task.objects.get(id=task_id)
+                task.important = not task.important
+                task.save()
 
     previous_url = request.META.get("HTTP_REFERER", "tasks")
     return redirect(previous_url)
