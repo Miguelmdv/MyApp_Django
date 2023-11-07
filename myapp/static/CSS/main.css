@@ -64,6 +64,9 @@ body {
     text-decoration: none;
     color: #ffffffe7;
 }
+.cddetail{
+    justify-content: space-around;
+}
 
 .text{
     margin-bottom: 10px;

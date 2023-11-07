@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1> {% if not task.done %}⏳ {% else %}✅ {% endif %}{{ task.title }}{% if task.important %} ⭐{% endif %}</h1>
-<form class="card" method="POST" action="{% url "update_delete_task" %}">
+<form class="card cddetail" method="POST" action="{% url "update_delete_task" %}">
     {% csrf_token %}
     <div > 
         
@@ -26,7 +26,10 @@
     </div>
     <input type="hidden" id="task_id" name="delete_task" value="">
     <div>
-        {{ form.as_p }}
+        <p>Title: {{ form.title }}</p>
+        <p>Description: {{ form.description }}</p>
+        <p>Project: {{ form.project }}</p>
+        <p>{{ form.important.as_hidden }}</p>
         <button class="button bupdate" type="submit" name="update_task" value={{ task.id }}>
             Update
         </button>
