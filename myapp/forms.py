@@ -4,6 +4,7 @@ from .models import Project, Task
 from django.core.exceptions import ValidationError  
 from django.contrib.auth.forms import UserCreationForm  
 from django.contrib.auth.models import User  
+import re
 
 class CreateNewTask(forms.Form):
     title = forms.CharField(label="Title", max_length=200, widget=forms.TextInput(attrs={"class": "input"}))
@@ -12,6 +13,11 @@ class CreateNewTask(forms.Form):
     important = forms.BooleanField(label="Important")
     
 class TaskForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        projects_user = kwargs.pop("projects_user", None)
+        super(TaskForm, self).__init__(*args, **kwargs)
+        if projects_user:
+            self.fields["project"].queryset = projects_user
     class Meta:
         model = Task
         fields = ("title", "description", "project", "important")
@@ -20,9 +26,6 @@ class ProjectForm(ModelForm):
     class Meta:
         model = Project
         fields = ("name",)
-        
-class CreateNewProject(forms.Form):
-    name = forms.CharField(label="Name", max_length=200, widget=forms.TextInput(attrs={"class": "input"}))
 
 class CustomUserCreationForm(UserCreationForm):  
     username = forms.CharField(label='username', min_length=5, max_length=150)  

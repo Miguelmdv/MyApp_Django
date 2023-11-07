@@ -42,14 +42,20 @@ body {
     padding: 0px 10px;
 }
 
+.margin_bottom_list{
+    padding-bottom: 30px;
+}
+
 .card {
     background: #292929;
-    padding: 1px;
+    padding:  10px 5px 10px;
     margin-bottom: 3px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    text-decoration: none;
+    color: #d3d3d3
 }
 .card:hover {
     background: #373737;
@@ -57,6 +63,10 @@ body {
 .card a {
     text-decoration: none;
     color: #ffffffe7;
+}
+
+.text{
+    margin-bottom: 10px;
 }
 
 .input {
@@ -67,7 +77,9 @@ body {
 
 .button{
     border-radius: 7px;
-    
+    width: auto;
+    min-width: -webkit-fill-available;
+    height: 30px;
 }
 
 .bdone{
@@ -79,7 +91,15 @@ body {
     color:whitesmoke;
 }
 
+.bsmall{
+    min-width: auto;
+}
+
 .bimportant{
     background-color: rgb(202, 199, 37);
+}
+
+.bupdate{
+    height: 36px;
 }
 

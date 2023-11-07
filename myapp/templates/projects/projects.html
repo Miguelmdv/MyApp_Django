@@ -2,14 +2,14 @@
 {% block content %}
 
 <form method="POST" action="{% url "delete_project" %}">
-
+    <h1>Projects</h1>
     {% csrf_token %}
     {% for project in projects %}
         <div class="card" >
             <a href="{% url "project_detail" project.id %}">
                 <h2>{{project.name}}</h2>
             </a>
-            <button class="button bdelete" type="button" onclick="delete_verification_project({{ project.id }})">
+            <button class="button bdelete bsmall" type="button" onclick="delete_verification_project({{ project.id }})">
                 ✖ Delete
             </button>
         </div>
