@@ -7,10 +7,10 @@
     <div > 
         
         <p>{{task.description}}</p>
-        <i>Project: {{task.project.name}}</i>
-        <p>Created: {{task.datecreated}}</p>
-        {% if task.datecompleted != None %}
-        <p>Completed: {{task.datecreated}}</p>
+        <i>Project: {{ task.project.name }}</i>
+        <p>Created: {{ task.datecreated|date:"d M, Y : H:i" }}</p>
+        {% if task.datecompleted %}
+        <p>Completed: {{ task.datecompleted|date:"d M, Y : H:i" }}</p>
         {% endif %}
     </div>
     <div> 
@@ -26,9 +26,12 @@
     </div>
     <input type="hidden" id="task_id" name="delete_task" value="">
     <div>
-        <p>Title: {{ form.title }}</p>
-        <p>Description: {{ form.description }}</p>
-        <p>Project: {{ form.project }}</p>
+        <p>Title:</p>
+        {{ form.title }}
+        <p>Description: </p>
+        {{ form.description }}
+        <p>Project: </p>
+        {{ form.project }}
         <p>{{ form.important.as_hidden }}</p>
         <button class="button bupdate" type="submit" name="update_task" value={{ task.id }}>
             Update

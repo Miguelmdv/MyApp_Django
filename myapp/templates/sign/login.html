@@ -9,9 +9,11 @@
         <p><FONT COLOR="red">{{error_message}}</p>
     {% endif %}
 
-    <button>
+    <button class="button bsmall">
         Log in
     </button>
 </form>
+
+<h3 class="log_ask"><a href="{% url "sign_up" %}">Don't have an account? Sign up</a></h3>
 
 {% endblock content %}

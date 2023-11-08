@@ -4,8 +4,7 @@
 <h1>Tasks</h1>
 <div class="margin_bottom_list">
 
-    {% for task in tasks %}
-        {% if task.important and not task.done %}
+    {% for task in tasks.tasks_incompleted_important %}
             <div class="card">
                 <a href="{% url "task_detail" task.id %}">
                     <div class="text">
@@ -32,11 +31,9 @@
                 
             </div>
             
-        {% endif %} 
     {% endfor %} 
 
-    {% for task in tasks %}
-        {% if not task.important and not task.done %}
+    {% for task in tasks.tasks_incompleted_notimportant %}
             <div class="card">
                 <a href="{% url "task_detail" task.id %}">
                     <div class="text">
@@ -63,12 +60,10 @@
                 
             </div>
             
-        {% endif %} 
     {% endfor %} 
 
     <h1>Completed</h1>
-    {% for task in tasks %}
-        {% if task.done %}
+    {% for task in tasks.tasks_completed %}
             <div class="card">
                 <a href="{% url "task_detail" task.id %}">
                     <div class="text">
@@ -95,7 +90,6 @@
                 
             </div>
             
-        {% endif %} 
     {% endfor %} 
 </div>
 

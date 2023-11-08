@@ -33,20 +33,32 @@ def about(request):
     username = "Miguel Angel Madrid"
     return render(request, "about.html", {"username": username})
 
+
 @login_required
 def projects(request):
     # projects = Project.objects.all()
     projects = Project.objects.filter(user=request.user)
     return render(request, "projects/projects.html", {"projects": projects})
 
+
 @login_required
 def tasks(request):
-    # tasks = Task.objects.all()
-    tasks = Task.objects.filter(project__user=request.user)
+    tasks_all = Task.objects.filter(project__user=request.user)
     tasks_completed = Task.objects.filter(done=True, project__user=request.user)
-    tasks_incompleted = Task.objects.filter(done=False, project__user=request.user)
-    tasks_important = Task.objects.filter(important=True, project__user=request.user)
+    tasks_incompleted_notimportant = Task.objects.filter(
+        done=False, important=False, project__user=request.user
+    )
+    tasks_incompleted_important = Task.objects.filter(
+        done=False, important=True, project__user=request.user
+    )
+    tasks = {
+        "tasks_all": tasks_all,
+        "tasks_completed": tasks_completed,
+        "tasks_incompleted_notimportant": tasks_incompleted_notimportant,
+        "tasks_incompleted_important": tasks_incompleted_important,
+    }
     return render(request, "tasks/tasks.html", {"tasks": tasks})
+
 
 @login_required
 def create_project(request):
@@ -66,6 +78,7 @@ def create_project(request):
             context["error_message"] = "Data is not valid"
             return render(request, "projects/create_project.html", context)
         return redirect("projects")
+
 
 @login_required
 def create_task(request):
@@ -101,6 +114,7 @@ def task_detail(request, id):
     projects_user = Project.objects.filter(user=request.user)
     form = TaskForm(instance=task, projects_user=projects_user)
     return render(request, "tasks/task_detail.html", {"task": task, "form": form})
+
 
 @login_required
 def delete_project(request):
@@ -146,9 +160,13 @@ def update_delete_task(request):
             try:
                 task_id = request.POST["update_task"]
                 if task_id:
-                    task = get_object_or_404(Task, id=task_id, project__user=request.user)
+                    task = get_object_or_404(
+                        Task, id=task_id, project__user=request.user
+                    )
                     projects_user = Project.objects.filter(user=request.user)
-                    form = TaskForm(request.POST, instance=task, projects_user=projects_user)
+                    form = TaskForm(
+                        request.POST, instance=task, projects_user=projects_user
+                    )
                     if form.is_valid():
                         form.save()
                         previous_url = previous_url_without_num(previous_url)
@@ -176,7 +194,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-        
+
             return redirect("projects")
         else:
             error_message = form.errors.as_ul()
@@ -185,6 +203,7 @@ def signup(request):
     else:
         form = CustomUserCreationForm()
     return render(request, "sign/signup.html", context)
+
 
 @login_required
 def signout(request):
@@ -203,6 +222,9 @@ def signin(request):
             return render(request, "sign/login.html", context)
         else:
             login(request, user)
-            return redirect("projects")
+            print(request.GET.get("next"))
+            if request.GET.get("next") == None:
+                return redirect("projects")
+            return redirect(f"{request.GET.get('next')}/")
     else:
         return render(request, "sign/login.html", context)
