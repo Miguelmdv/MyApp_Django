@@ -1,5 +1,5 @@
-# DJANGO PROJECT
+# DJANGO CRUD WEB
 
-Mini project to play and learn with django how to create a web application.
+Project to learn with django how to create a CRUD web application.
 
-In this case, for a project and task manager application.
+In this case, a task manager app.
