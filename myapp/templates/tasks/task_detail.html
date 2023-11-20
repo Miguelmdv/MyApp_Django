@@ -1,42 +1,82 @@
 {% extends "layout/base.html" %}
 {% block content %}
 
-<h1> {% if not task.done %}⏳ {% else %}✅ {% endif %}{{ task.title }}{% if task.important %} ⭐{% endif %}</h1>
-<form class="card cddetail" method="POST" action="{% url "update_delete_task" %}">
-    {% csrf_token %}
-    <div > 
-        
-        <p>{{task.description}}</p>
-        <i>Project: {{ task.project.name }}</i>
-        <p>Created: {{ task.datecreated|date:"d M, Y : H:i" }}</p>
-        {% if task.datecompleted %}
-        <p>Completed: {{ task.datecompleted|date:"d M, Y : H:i" }}</p>
-        {% endif %}
+<div class="card col-md-8 offset-md-2">
+    <div class="card-header text-center">
+        <h1>Update Task</h1>
     </div>
-    <div> 
-        <button class="button bdone" type="submit" name="check_task" value="{{ task.id }}">
-            ✔ Done
-        </button>
-        <button class="button bimportant" type="submit" name="imp_task" value="{{ task.id }}">
-            ⭐ Important
-        </button>
-        <button class="button bdelete" type="button" onclick="delete_verification_task({{ task.id }})">
-            ✖ Delete
-        </button>
+    <div class="row">
+        <div class="">
+            <form method="POST" class="card card-body" action="{% url "update_delete_task" %}">
+                {% csrf_token %}
+                <h3 class="text-center mb-1">{% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
+                <small class="text-center mb-1">{{ task.project.name }}</small>
+                <small class="text-center mb-1">Created: {{ task.datecreated|date:"d M, Y : H:i" }}</small>
+                {% if task.datecompleted %}
+                <small class="text-center mb-1">Completed: {{ task.datecompleted|date:"d M, Y : H:i" }}</small>
+                {% endif %}
+                <div class="form-floating mb-3">  
+                    <input type="text" name="title" id="floatingInput" class="form-control" placeholder="title" maxlength="200" value="{{ task.title }}" required autocapitalize="none" id="id_username">
+                    <label for="floatingInput">Title</label>
+                </div>
+                <div class="form-floating mb-3">  
+                    <textarea  type="textarea" name="description" id="floatingTextarea" class="form-control" placeholder="description" maxlength="200" autocapitalize="none" style="height: 100px" id="id_description">{{ task.description }}</textarea>
+                    <label for="floatingTextarea">Description</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <select class="form-select" name="project" id="floatingSelect" aria-label="Floating label select">
+                        {% for option in form.project.field.queryset %}
+                        <option value="{{ option.id }}">{{ option.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="floatingSelect">Project</label>
+                </div>
+                <p>{{ form.important.as_hidden }}</p>
+                <div class="d-grid gap-2 mb-3">
+                    <button type="submit" class="btn btn-success" name="update_task" value={{ task.id }}>
+                        Save
+                    </button>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <!-- Button trigger modal -->
+                    <form method="POST" action="{% url "update_delete_task" %}">
+                        <button class="btn btn-outline-success" type="submit" name="check_task" value="{{ task.id }}">
+                            ✔
+                        </button>
+                        <button class="btn btn-outline-warning" type="submit" name="imp_task" value="{{ task.id }}">
+                            Fav
+                        </button>
+                    </form>
+                    <button class="btn btn-outline-danger" type="button" id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#DeleteModal{{ task.id }}">
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <input type="hidden" id="task_id" name="delete_task" value="">
-    <div>
-        <p>Title:</p>
-        {{ form.title }}
-        <p>Description: </p>
-        {{ form.description }}
-        <p>Project: </p>
-        {{ form.project }}
-        <p>{{ form.important.as_hidden }}</p>
-        <button class="button bupdate" type="submit" name="update_task" value={{ task.id }}>
-            Update
-        </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DeleteModal{{ task.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="modal-title">{{ task.title }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Are you sure you want to eliminate this?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form method="POST"  action="{% url "update_delete_task" %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" name="delete_task" id="delete_task" value="{{ task.id }}">Delete</button>
+            </form>  
+        </div>
+        </div>
     </div>
-</form>
+</div>
 
 {% endblock content %}

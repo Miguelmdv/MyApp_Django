@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from .models import Project, Task
 from django.shortcuts import get_object_or_404
 from .forms import TaskForm, ProjectForm, CustomUserCreationForm
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
@@ -24,8 +23,6 @@ def previous_url_without_num(p_url):
 # Create your views here.
 def index(request):
     title = "Django practice!!"
-    if request.user.username:
-        title = f"Hello {request.user.username}"
     return render(request, "index.html", {"title": title})
 
 
@@ -36,9 +33,12 @@ def about(request):
 
 @login_required
 def projects(request):
-    # projects = Project.objects.all()
-    projects = Project.objects.filter(user=request.user)
-    return render(request, "projects/projects.html", {"projects": projects})
+    if request.method == "GET":
+        context = {"form": ProjectForm(), "projects": None, "error_message": ""}
+        context["projects"] = Project.objects.filter(user=request.user)
+        return render(request, "projects/projects.html", context)
+    else:
+        return redirect("projects")
 
 
 @login_required
@@ -62,22 +62,18 @@ def tasks(request):
 
 @login_required
 def create_project(request):
-    context = {"form": ProjectForm(), "error_message": ""}
-    if request.method == "GET":
-        # show interface
-        return render(request, "projects/create_project.html", context)
-    else:
+    projects = Project.objects.filter(user=request.user)
+    context = {"form": ProjectForm(), "projects": projects, "error_message": ""}
+    if request.method == "POST":
         # Save data
-        # Project.objects.create(name=request.POST["name"])
         try:
             form = ProjectForm(request.POST)
             new_project = form.save(commit=False)
             new_project.user = request.user
             new_project.save()
         except ValueError:
-            context["error_message"] = "Data is not valid"
-            return render(request, "projects/create_project.html", context)
-        return redirect("projects")
+            context["error_message"] = "Project is not valid"
+    return render(request, "projects/projects.html", context)
 
 
 @login_required
@@ -85,23 +81,43 @@ def create_task(request):
     projects_user = Project.objects.filter(user=request.user)
     form = TaskForm(projects_user=projects_user)
     context = {"form": form, "error_message": ""}
+
     if request.method == "GET":
         # show interface
         return render(request, "tasks/create_task.html", context)
+
     else:
         try:
-            form = TaskForm(request.POST)
-            form.save()
+            form = TaskForm(request.POST, projects_user=projects_user)
+
+            if form.is_valid():
+                form.save()
+
         except ValueError:
-            context["error_message"] = "Data is not valid"
+            context["error_message"] = "Could not create task"
             return render(request, "tasks/create_task.html", context)
+
         return redirect("tasks")
 
 
 @login_required
 def project_detail(request, id):
     project = get_object_or_404(Project, id=id, user=request.user)
-    tasks = Task.objects.filter(project=id)
+
+    tasks_all = Task.objects.filter(project=id)
+    tasks_completed = Task.objects.filter(project=id, done=True)
+    tasks_incompleted_notimportant = Task.objects.filter(
+        project=id, done=False, important=False
+    )
+    tasks_incompleted_important = Task.objects.filter(
+        project=id, done=False, important=True
+    )
+    tasks = {
+        "tasks_all": tasks_all,
+        "tasks_completed": tasks_completed,
+        "tasks_incompleted_notimportant": tasks_incompleted_notimportant,
+        "tasks_incompleted_important": tasks_incompleted_important,
+    }
     return render(
         request, "projects/project_detail.html", {"project": project, "tasks": tasks}
     )
@@ -110,7 +126,6 @@ def project_detail(request, id):
 @login_required
 def task_detail(request, id):
     task = get_object_or_404(Task, id=id, project__user=request.user)
-    # form = TaskForm(instance=task)
     projects_user = Project.objects.filter(user=request.user)
     form = TaskForm(instance=task, projects_user=projects_user)
     return render(request, "tasks/task_detail.html", {"task": task, "form": form})
@@ -119,8 +134,8 @@ def task_detail(request, id):
 @login_required
 def delete_project(request):
     if request.method == "POST":
-        if "project_id" in request.POST:
-            project_id = request.POST["project_id"]
+        if "delete_project" in request.POST:
+            project_id = request.POST["delete_project"]
             if project_id:
                 project = get_object_or_404(Project, id=project_id)
                 project.delete()
@@ -133,12 +148,10 @@ def delete_project(request):
 def update_delete_task(request):
     previous_url = request.META.get("HTTP_REFERER", "tasks")
     if request.method == "POST":
-        print(request.POST)
         if "check_task" in request.POST:
             task_id = request.POST["check_task"]
             if task_id:
                 task = get_object_or_404(Task, id=task_id, project__user=request.user)
-                print(task)
                 task.done = not task.done
                 if task.done:
                     task.datecompleted = timezone.now()
@@ -177,7 +190,6 @@ def update_delete_task(request):
             try:
                 task_id = request.POST["delete_task"]
                 if task_id:
-                    print("Deleted")
                     task = get_object_or_404(Task, id=task_id)
                     task.delete()
                     previous_url = previous_url_without_num(previous_url)
@@ -197,9 +209,9 @@ def signup(request):
 
             return redirect("projects")
         else:
-            error_message = form.errors.as_ul()
+            error_message = form
             context["form"] = form
-            # context["error_message"] = error_message
+            context["error_message"] = error_message
     else:
         form = CustomUserCreationForm()
     return render(request, "sign/signup.html", context)
@@ -222,9 +234,12 @@ def signin(request):
             return render(request, "sign/login.html", context)
         else:
             login(request, user)
-            print(request.GET.get("next"))
             if request.GET.get("next") == None:
                 return redirect("projects")
             return redirect(f"{request.GET.get('next')}/")
     else:
         return render(request, "sign/login.html", context)
+
+
+def tasks2(request):
+    return render(request, "tasks/tasks2.html")

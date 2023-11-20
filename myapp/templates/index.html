@@ -1,8 +1,23 @@
 {% extends "layout/base.html" %}
 {% block content %}
 
-<h1>{{title}}</h1>
-<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut quia doloremque veritatis maxime eius aliquid tenetur vero eligendi in. Repellendus ut laboriosam ducimus consequuntur assumenda, similique ad rem! Maiores, qui.</p>
+
+<section class="card card-body">
+    <h1 class="display-1 text-center">{{title}}</h1>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut quia doloremque veritatis maxime eius aliquid tenetur vero eligendi in. Repellendus ut laboriosam ducimus consequuntur assumenda, similique ad rem! Maiores, qui.</p>
+    
+    {% if not user.is_authenticated %}
+        <div class="text-center">
+            <a class="btn btn-success" href="{% url "log_in" %}">
+                Log In
+            </a>
+            <a class="btn btn-success" href="{% url "sign_up" %}">
+                Sign Up
+            </a>
+        </div>
+    {% endif %}
+</section>
+
 
 {% endblock content %}
 

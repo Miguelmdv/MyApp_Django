@@ -1,20 +1,80 @@
 {% extends "layout/base.html" %}
 {% block content %}
 
-<form method="POST" action="{% url "delete_project" %}">
-    <h1>Projects</h1>
-    {% csrf_token %}
-    {% for project in projects %}
-        <div class="card" >
-            <a href="{% url "project_detail" project.id %}">
-                <h2>{{project.name}}</h2>
+<div class="col-md-5 offset-md-2">
+        <form method="POST" action="{% url "create_project" %}">
+            <div class="row m-3">
+                {% csrf_token %}
+                <div class="input-group col-auto">
+                    <span class="input-group-text" id="basic-addon1">New Project</span>
+                    {% if error_message %}
+                    <span class="input-group-text text-danger" id="basic-addon1">{{error_message}}</span>
+                    {% endif %}
+                    <input type="text" name="name"  id="id_name" class="form-control col-auto" placeholder="Name" maxlength="200" value="{{ task.title }}" required autocapitalize="none" id="id_name" autocomplete="off">
+                    <button class="btn btn-success" type="submit">Save</button>
+                </div>
+                <div class="col-auto">
+                    
+                </div>
+                <div class="col-auto">
+                    
+                </div>
+
+            </div>
+        </form>
+</div>
+
+<div class="card col-md-8 offset-md-2">
+    <div class="card-header text-center">
+        <h1>Projects</h1>
+    </div>
+    <div class="list-group list-group-flush">
+        {% block project_detail %}
+        {% for project in projects %}
+        <div class="d-flex justify-content-between">
+            <a class="list-group-item list-group-item-action" aria-current="true" href="{% url "project_detail" project.id %}">
+                <h3 class="mb-1" id="project-name-{{ product.id }}">{{ project.name }}</h3>
+                <small>{{ user.username }}</small>
+                <p class="mb-1">{{ project.datecreated }}</p>
             </a>
-            <button class="button bdelete bsmall" type="button" onclick="delete_verification_project({{ project.id }})">
-                ✖ Delete
-            </button>
+            <div class="p-1">
+                <!-- Button trigger modal -->
+                <button class="btn btn-outline-danger" type="button" id="{{ project.id }}" data-bs-toggle="modal" data-bs-target="#DeleteModal{{ project.id }}">
+                    ✖
+                </button>
+            </div>
+        </div>    
+
+        <!-- Modal -->
+        <div class="modal fade" id="DeleteModal{{ project.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modal-title">{{ project.name }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to eliminate this?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form method="POST"  action="{% url "delete_project" %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" name="delete_project" id="delete_project" value="{{ project.id }}">Delete</button>
+                    </form>  
+                </div>
+                </div>
+            </div>
         </div>
-    {% endfor %} 
-    <input type="hidden" id="project_id" name="project_id" value="">
-    
-</form>
+        {% endfor %} 
+
+
+        {% endblock project_detail %}
+    </div>
+</div>
+
+
+
 {% endblock content %}
+
+

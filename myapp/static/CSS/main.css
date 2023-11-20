@@ -4,51 +4,61 @@ body {
     font-family: Arial, sans-serif;
     background: #202020;
     color: #ffffff;
-    margin-left: 20px; /* Margen a la izquierda */
-    margin-right: 20px; /* Margen a la derecha */
+    /* Margen a la izquierda */
+    margin-left: 20px;
+    /* Margen a la derecha */
+    margin-right: 20px;
 }
 
 .navbar {
     background: #6052b1;
     display: flex;
-    justify-content: space-between; /* Alinear el logo a la izquierda y el menú a la derecha */
-    align-items:  center; /* Centrar verticalmente */
+    /* Alinear el logo a la izquierda y el menú a la derecha */
+    justify-content: space-between;
+    /* Centrar verticalmente */
+    align-items: center;
 }
 
 
 .menu {
-    list-style: none; /* Quitar las viñetas de la lista */
+    /* Quitar las viñetas de la lista */
+    list-style: none;
     margin: 0;
     padding: 0;
 }
 
 .menu li {
-    display: inline; /* Hacer que los elementos del menú se muestren en línea */
-    margin: 0 10px; /* Espaciado entre los elementos del menú */
+    /* Hacer que los elementos del menú se muestren en línea */
+    display: inline;
+    /* Espaciado entre los elementos del menú */
+    margin: 0 10px;
 }
 
 .menu a {
     text-decoration: none;
-    color: #d3d3d3; /* Color del texto del menú */
-    padding: 10px 15px; /* Espaciado interno para los elementos del menú */
+    /* Color del texto del menú */
+    color: #d3d3d3;
+    /* Espaciado interno para los elementos del menú */
+    padding: 10px 15px;
 }
-.menu a:hover{
+
+.menu a:hover {
     color: #ffffff;
 }
 
-.container{
+.container {
     max-width: 1200px;
     margin: auto;
     padding: 0px 10px;
 }
 
-.margin_bottom_list{
+.margin_bottom_list {
     padding-bottom: 30px;
 }
 
 .card {
     background: #292929;
-    padding:  10px 5px 10px;
+    padding: 10px 5px 10px;
     margin-bottom: 3px;
     display: flex;
     flex-direction: row;
@@ -57,18 +67,21 @@ body {
     text-decoration: none;
     color: #d3d3d3
 }
+
 .card:hover {
     background: #373737;
 }
+
 .card a {
     text-decoration: none;
     color: #ffffffe7;
 }
-.cddetail{
+
+.cddetail {
     justify-content: space-around;
 }
 
-.text{
+.text {
     margin-bottom: 10px;
 }
 
@@ -78,34 +91,34 @@ body {
     display: block;
 }
 
-.button{
+.button {
     border-radius: 7px;
     width: auto;
     min-width: -webkit-fill-available;
     height: 30px;
 }
 
-.bdone{
+.bdone {
     background-color: rgb(111, 165, 30);
 }
 
-.bdelete{
+.bdelete {
     background-color: rgb(148, 45, 45);
-    color:whitesmoke;
+    color: whitesmoke;
 }
 
-.bsmall{
+.bsmall {
     min-width: auto;
 }
 
-.bimportant{
+.bimportant {
     background-color: rgb(202, 199, 37);
 }
 
-.bupdate{
+.bupdate {
     height: 36px;
 }
 
-.log_ask a{
-    color:#ffffff;
+.log_ask a {
+    color: #ffffff;
 }

@@ -1,97 +1,171 @@
 {% extends "layout/base.html" %}
 {% block content %}
 
-<h1>Tasks</h1>
-<div class="margin_bottom_list">
 
-    {% for task in tasks.tasks_incompleted_important %}
-            <div class="card">
-                <a href="{% url "task_detail" task.id %}">
-                    <div class="text">
-                        <h3> {% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
-                        <p>{{task.description}}</p>
-                        <i>{{task.project.name}}</i>   
-                    </div>
-                </a>
-                <div>
-                    <form method="POST" action="{% url "update_delete_task" %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="task_id" name="delete_task" value="">
-                        <button class="button bdone" type="submit" name="check_task" value="{{ task.id }}">
-                            ✔ Done
-                        </button>
-                        <button class="button bimportant" type="submit" name="imp_task" value="{{ task.id }}">
-                            ⭐ Important
-                        </button>
-                    </form>
-                    <button class="button bdelete" type="button" onclick="delete_verification_task({{ task.id }})">
-                        ✖ Delete
-                    </button>
-                </div>
-                
-            </div>
-            
-    {% endfor %} 
 
-    {% for task in tasks.tasks_incompleted_notimportant %}
-            <div class="card">
-                <a href="{% url "task_detail" task.id %}">
-                    <div class="text">
-                        <h3> {% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
-                        <p>{{task.description}}</p>
-                        <i>{{task.project.name}}</i>   
-                    </div>
-                </a>
-                <div>
-                    <form method="POST" action="{% url "update_delete_task" %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="task_id" name="delete_task" value="">
-                        <button class="button bdone" type="submit" name="check_task" value="{{ task.id }}">
-                            ✔ Done
-                        </button>
-                        <button class="button bimportant" type="submit" name="imp_task" value="{{ task.id }}">
-                            ⭐ Important
-                        </button>
-                    </form>
-                    <button class="button bdelete" type="button" onclick="delete_verification_task({{ task.id }})">
-                        ✖ Delete
+<div class="card col-md-8 offset-md-2">
+    <!-- Important incompleted -->
+    <div class="card-header text-center">
+        <h1>Tasks</h1>
+    </div>
+    {% block task_detail %}
+    <div class="list-group list-group-flush">
+        {% for task in tasks.tasks_incompleted_important %}
+        <div class="d-flex justify-content-between">
+            <a class="list-group-item list-group-item-action" aria-current="true" href="{% url "task_detail" task.id %}">
+                <h3 class="mb-1">{% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
+                <small>{{ task.project.name }}</small>
+                <p class="mb-1">{{ task.description }}</p>
+            </a>
+            <div class="p-1">
+                <!-- Button trigger modal -->
+                <button class="btn btn-outline-danger" type="button" id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#DeleteModal{{ task.id }}">
+                    ✖
+                </button>
+                <form method="POST" action="{% url "update_delete_task" %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-success" type="submit" name="check_task" value="{{ task.id }}">
+                        ✔
                     </button>
-                </div>
-                
+                    <button class="btn btn-outline-warning" type="submit" name="imp_task" value="{{ task.id }}">
+                        ⭐
+                    </button>
+                </form>
             </div>
-            
-    {% endfor %} 
+        </div>    
 
-    <h1>Completed</h1>
-    {% for task in tasks.tasks_completed %}
-            <div class="card">
-                <a href="{% url "task_detail" task.id %}">
-                    <div class="text">
-                        <h3> {% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
-                        <p>{{task.description}}</p>
-                        <i>{{task.project.name}}</i>   
-                    </div>
-                </a>
-                <div>
-                    <form method="POST" action="{% url "update_delete_task" %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="task_id" name="delete_task" value="">
-                        <button class="button bdone" type="submit" name="check_task" value="{{ task.id }}">
-                            ✔ Done
-                        </button>
-                        <button class="button bimportant" type="submit" name="imp_task" value="{{ task.id }}">
-                            ⭐ Important
-                        </button>
-                    </form>
-                    <button class="button bdelete" type="button" onclick="delete_verification_task({{ task.id }})">
-                        ✖ Delete
-                    </button>
+        <!-- Modal -->
+        <div class="modal fade" id="DeleteModal{{ task.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modal-title">{{ task.title }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+                <div class="modal-body">
+                    Are you sure you want to eliminate this?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form method="POST"  action="{% url "update_delete_task" %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" name="delete_task" id="delete_task" value="{{ task.id }}">Delete</button>
+                    </form>  
+                </div>
+                </div>
             </div>
-            
-    {% endfor %} 
+        </div>
+        {% endfor %} 
+
+    </div>
+
+
+
+    <div class="list-group list-group-flush">
+        {% for task in tasks.tasks_incompleted_notimportant %}
+        <div class="d-flex justify-content-between">
+            <a class="list-group-item list-group-item-action" aria-current="true" href="{% url "task_detail" task.id %}">
+                <h3 class="mb-1">{% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
+                <small>{{ task.project.name }}</small>
+                <p class="mb-1">{{ task.description }}</p>
+            </a>
+            <div class="p-1">
+                <!-- Button trigger modal -->
+                <button class="btn btn-outline-danger" type="button" id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#DeleteModal{{ task.id }}">
+                    ✖
+                </button>
+                <form method="POST" action="{% url "update_delete_task" %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-success" type="submit" name="check_task" value="{{ task.id }}">
+                        ✔
+                    </button>
+                    <button class="btn btn-outline-warning" type="submit" name="imp_task" value="{{ task.id }}">
+                        ⭐
+                    </button>
+                </form>
+            </div>
+        </div>    
+
+        <!-- Modal -->
+        <div class="modal fade" id="DeleteModal{{ task.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modal-title">{{ task.title }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to eliminate this?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form method="POST"  action="{% url "update_delete_task" %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" name="delete_task" id="delete_task" value="{{ task.id }}">Delete</button>
+                    </form>  
+                </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %} 
+        
+    </div>
+
+    <div class="card-header text-center">
+        <h3>Completed</h3>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for task in tasks.tasks_completed %}
+        <div class="d-flex justify-content-between">
+            <a class="list-group-item list-group-item-action" aria-current="true" href="{% url "task_detail" task.id %}">
+                <h3 class="mb-1">{% if not task.done %}⏳ {% else %}✅ {% endif %}{{task.title}}{% if task.important %} ⭐{% endif %}</h3>
+                <small>{{ task.project.name }}</small>
+                <p class="mb-1">{{ task.description }}</p>
+            </a>
+            <div class="p-1">
+                <!-- Button trigger modal -->
+                <button class="btn btn-outline-danger" type="button" id="{{ task.id }}" data-bs-toggle="modal" data-bs-target="#DeleteModal{{ task.id }}">
+                    ✖
+                </button>
+                <form method="POST" action="{% url "update_delete_task" %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-success" type="submit" name="check_task" value="{{ task.id }}">
+                        ✔
+                    </button>
+                    <button class="btn btn-outline-warning" type="submit" name="imp_task" value="{{ task.id }}">
+                        ⭐
+                    </button>
+            </div>
+        </div>    
+
+        <!-- Modal -->
+        <div class="modal fade" id="DeleteModal{{ task.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modal-title">{{ task.title }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to eliminate this?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form method="POST"  action="{% url "update_delete_task" %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" name="delete_task" id="delete_task" value="{{ task.id }}">Delete</button>
+                    </form>  
+                </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %} 
+
+        
+        {% endblock task_detail %}
+        
+    </div>
+
 </div>
-
 
 {% endblock content %}

@@ -1,19 +1,36 @@
 {% extends "layout/base.html" %}
 {% block content %}
 
-<h1>Log In</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{form.as_p}}
-    {% if error_message != "" %}  
-        <p><FONT COLOR="red">{{error_message}}</p>
-    {% endif %}
 
-    <button class="button bsmall">
-        Log in
-    </button>
-</form>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form method="POST" class="card card-body">
+            {% csrf_token %}
+            <h1 class="text-center py-1">Log In</h1>
+            <div class="form-floating mb-3">  
+                <input type="text" name="username" id="floatingInput" class="form-control" placeholder="username" maxlength="150" minlength="3" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" autofocus required autocapitalize="none" autocomplete="username" id="id_username">
+                <label for="floatingInput">Username</label>
+            </div>
+            <div class="form-floating mb-3">  
+                <input type="password" name="password" id="floatingInput" class="form-control" placeholder="password" value="{% if form.password1.value %}{{ form.password.value }}{% endif %}" autocomplete="current-password" required>
+                <label for="floatingInput">Password</label>
+            </div>
+            <div>
+            {% if error_message != "" %}  
+            <p class="text-danger">{{ error_message }}</p>
+            {% endif %}
+            </div>
+            <div class="d-grid gap-3">
+            <button type="submit" class="btn btn-success">
+                Sign Up 
+            </button>
+            <a class="btn btn-outline-secondary" href="{% url "sign_up" %}">
+                Don't have an account? Sign up
+            </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-<h3 class="log_ask"><a href="{% url "sign_up" %}">Don't have an account? Sign up</a></h3>
 
 {% endblock content %}
